@@ -30,6 +30,26 @@ BIRDEYE_API_KEY=your_birdeye_api_key
 SOLANA_PUBLIC_KEY=your_wallet_public_key  # Optional
 WALLET_PUBLIC_KEY=your_wallet_public_key   # Alternative to SOLANA_PUBLIC_KEY
 BIRDEYE_SEARCH_LIMIT=50                    # Optional, defaults to 50
+TWITTER_API_KEY=your_twitter_api_key       # Required for Twitter integration
+TWITTER_API_SECRET=your_twitter_secret     # Required for Twitter integration
+TWITTER_ACCESS_TOKEN=your_access_token     # Required for Twitter integration
+TWITTER_ACCESS_SECRET=your_access_secret   # Required for Twitter integration
+UPDATE_INTERVAL=300                        # Optional, defaults to 300 seconds
+```
+
+### Configuration Options
+
+```typescript
+interface MemeTrackerConfig {
+  minMarketCap: number;        // Minimum market cap in USD
+  priceChangeThreshold: number; // Percentage
+  holderIncreaseThreshold: number; // Percentage
+  longTermHolderThreshold: number; // Percentage
+  searchLimit: number;         // Number of tokens to fetch
+  minLiquidity: number;        // Minimum liquidity in USD
+  updateInterval: number;      // Update interval in seconds
+  twitterEnabled: boolean;     // Enable/disable Twitter integration
+}
 ```
 
 ### Default Configuration
@@ -107,6 +127,47 @@ Token: SYMBOL
 - 24h Volume: $XX.XXM
 ```
 
+## Installation
+
+```bash
+npm install @sage/plugin-solana-meme-tracker
+```
+
+## API Methods
+
+### Core Methods
+
+```typescript
+// Initialize the tracker
+await memeTracker.initialize();
+
+// Search for meme tokens
+const tokens = await memeTracker.searchMemeTokens({
+  minMarketCap: 10000000,
+  sortBy: 'volume24h'
+});
+
+// Analyze token holders
+const holderAnalysis = await memeTracker.analyzeHolders(tokenAddress);
+
+// Post Twitter update
+await memeTracker.postTwitterUpdate(tokenData);
+```
+
+### Event Listeners
+
+```typescript
+// Listen for new token events
+memeTracker.on('newToken', (token) => {
+  console.log('New token detected:', token);
+});
+
+// Listen for significant price changes
+memeTracker.on('priceChange', (data) => {
+  console.log('Significant price change:', data);
+});
+```
+
 ## Error Handling
 
 The plugin includes robust error handling for:
@@ -115,6 +176,22 @@ The plugin includes robust error handling for:
 - Authentication errors
 - Invalid responses
 - HTML response detection and filtering
+- Twitter API errors
+- Network timeouts
+- Invalid configuration
+
+### Error Examples
+```typescript
+try {
+  await memeTracker.initialize();
+} catch (error) {
+  if (error instanceof ConfigurationError) {
+    console.error('Configuration error:', error.message);
+  } else if (error instanceof APIError) {
+    console.error('API error:', error.message);
+  }
+}
+```
 
 ## Development
 
